@@ -292,7 +292,7 @@ void Game::Update(float deltaTime)
 			if (randTexture  == 1)
 			{
 				randBoss = rand() % (20 * this->players[0].getLevel()) + 1;
-				if (randBoss < 10 && this->players[0].getLevel() > 15)
+				if (randBoss < 20 && this->players[0].getLevel() > 15)
 				{
 					this->enemy02Texture.loadFromFile("Textures/Enemy/freezer.png");
 					this->enemies.push_back(Enemy(
@@ -300,9 +300,9 @@ void Game::Update(float deltaTime)
 						Vector2f(-1.f, 0.f),
 						Vector2f(0.5f, 0.5f),
 						0,
-						this->players[0].getLevel() * 10,
-						this->players[0].getLevel() * 10,
-						this->players[0].getLevel() * 10,
+						this->players[0].getHpMax() * 2.15,
+						this->players[0].getDamageMin() * 4.15,
+						this->players[0].getDamageMin() * 2.15,
 						rand() % this->playerAlive));
 				}
 				else
@@ -313,9 +313,9 @@ void Game::Update(float deltaTime)
 						Vector2f(-1.f, 0.f),
 						Vector2f(0.2f, 0.2f),
 						rand() % 2,
-						this->players[0].getLevel() * 5,
-						this->players[0].getLevel() * 1.5,
-						this->players[0].getLevel() + 2,
+						this->players[0].getHpMax() * 1.15,
+						this->players[0].getDamageMin() * 3,
+						this->players[0].getDamageMin() * 2,
 						rand() % this->playerAlive));
 				}
 			}
@@ -325,9 +325,9 @@ void Game::Update(float deltaTime)
 					&enemy01Texture, this->window->getSize(),
 					Vector2f(-1.f, 0.f), Vector2f(0.2f, 0.2f),
 					rand() % 2,
-					rand() % 3 + this->players[0].getLevel() * 1.3,
-					this->players[0].getLevel() * 1.3,
-					this->players[0].getLevel(),
+					rand() % 3 + this->players[0].getHpMax() * 0.15,
+					this->players[0].getDamageMin() * 2,
+					this->players[0].getDamageMin() * 1.1,
 					rand() % this->playerAlive));
 			}
 
@@ -428,9 +428,11 @@ void Game::Update(float deltaTime)
 											32, 30.f));
 									if (this->enemySpawnTimerMax > 20)
 									{
-										this->enemySpawnTimerMax -= 0.12;
+										this->enemySpawnTimerMax -= 0.3;
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
+										cout << "Level UP" << this->players[i].getLevel() << this->enemySpawnTimerMax << endl;
 									}
+									
 								}
 								//Create TextTag
 								this->textTags.push_back(
@@ -492,13 +494,15 @@ void Game::Update(float deltaTime)
 							Vector2f(this->players[i].getPosition().x + 20.f,
 								this->players[i].getPosition().y + 150.f),
 							32, 30.f));
-				}
-				if (this->enemySpawnTimerMax > 20)
-				{
-					this->enemySpawnTimerMax -= 0.3;
-					this->enemySpawnTimer = this->enemySpawnTimerMax;
+					if (this->enemySpawnTimerMax > 20)
+					{
+						this->enemySpawnTimerMax -= 0.3;
+						this->enemySpawnTimer = this->enemySpawnTimerMax;
+						cout << "Level UP" << this->players[i].getLevel() << this->enemySpawnTimerMax << endl;
+					}
 				}
 			}
+			
 			for (int i = 0; i < 7; i++)
 			{
 				this->itemsKeep[i] = 0;
@@ -668,6 +672,7 @@ void Game::Menu()
 {
 	if (this->menuUI[1].getGlobalBounds().contains(Mouse::getPosition().x, Mouse::getPosition().y) && Mouse::isButtonPressed(Mouse::Left) || Keyboard::isKeyPressed(Keyboard::M))
 	{
+		Score(this->window).writeFile(this->playerName, this->score);
 		this->setActionToZero = true;
 	}
 }
@@ -748,7 +753,6 @@ void Game::Draw()
 		if (this->held)
 		{
 			Score(this->window).writeFile(this->playerName, this->score);
-			cout << "x" << this->score << endl;
 			this->held = false;
 		}
 		this->window->clear();

@@ -67,6 +67,7 @@ public:
 	inline const Vector2f& getPosition() { return this->sprite.getPosition(); }
 	inline const String getHpAsString() const { return to_string(this->hp) + '/' + to_string(this->hpMax); }
 	inline const int getDamage() const { return rand() % this->damageMax + this->damage; }
+	inline const int getDamageMin() const { return this->damage; }
 	inline FloatRect getGlobalBounds() const { return this->sprite.getGlobalBounds(); }
 	inline const int& getHp() const { return this->hp; }
 	inline const int& getHpMax() const { return this->hpMax; }
