@@ -12,6 +12,8 @@ int main()
 	MusicSounds musicSound;
 	
 	bool Focus = true;
+
+	vector<Event> textEntered;
 	
 	Image icon;
 	icon.loadFromFile("Icon/icon.png");
@@ -19,9 +21,10 @@ int main()
 
 	while (window.isOpen())
 	{
+		textEntered.clear();
 		deltaTime = clock.restart().asSeconds();
 		Event event;
-
+		
 		while (window.pollEvent(event))
 		{
 			switch (event.type)
@@ -34,6 +37,9 @@ int main()
 				{
 					window.close();
 				}
+				break;
+			case Event::TextEntered:
+				textEntered.push_back(event);
 				break;
 			case Event::GainedFocus:
 				Focus = true;
@@ -84,7 +90,7 @@ int main()
 			}
 			if (action == 4)
 			{
-				menu.UpdateInput(event, deltaTime);
+				menu.UpdateInput(textEntered);
 			}
 			if (action == 5)
 			{

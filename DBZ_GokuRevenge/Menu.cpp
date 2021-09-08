@@ -16,8 +16,6 @@ MainMenu::MainMenu(RenderWindow* window)
 
 	this->window = window;
 	float posY = 600;
-	this->delayInputMax = 0.15f;
-	this->delayInput = this->delayInputMax;
 
 
 	for (size_t i = 0; i < 3; i++)
@@ -143,37 +141,32 @@ void MainMenu::Update()
 	}
 	Question();
 }
-void MainMenu::UpdateInput(Event& event, float deltaTime)
+void MainMenu::UpdateInput(vector<Event> events)
 {
 	this->window->clear();
 	this->window->draw(Input);
-	this->event = event;
-	this->delayInput += deltaTime;
-	if (this->playerName == "" && !(this->event.type == Event::TextEntered))
+	for (size_t i = 0; i < events.size(); i++)
 	{
-		this->player.setString("Enter Your Name");
-		this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
-	}
-	else
-	{
-		if (this->delayInput >= this->delayInputMax)
+		if (this->playerName == "" && !(events[i].type == Event::TextEntered))
 		{
-			if (event.type == sf::Event::TextEntered) {
-				if (event.text.unicode != 32 && !Keyboard::isKeyPressed(Keyboard::Enter))
+			this->player.setString("Enter Your Name");
+			this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
+		}
+		else
+		{
+			if (events[i].text.unicode != 32 && !Keyboard::isKeyPressed(Keyboard::Enter) && events[i].text.unicode != 63)
+			{
+				if (events[i].text.unicode == 8 && playerName.length() > 0)
 				{
-					if (event.text.unicode == 8 && playerName.length() > 0)
-					{
-						playerName.erase(playerName.length() - 1);
-					}
-					else if (event.text.unicode < 128 && playerName.length() < 10 && event.text.unicode != 8)
-					{
-						playerName += static_cast<char>(event.text.unicode);
-					}
-					player.setString(playerName);
-					this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
+					playerName.erase(playerName.length() - 1);
 				}
+				else if (events[i].text.unicode < 128 && playerName.length() < 10 && events[i].text.unicode != 8)
+				{
+					playerName += static_cast<char>(events[i].text.unicode);
+				}
+				player.setString(playerName);
+				this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
 			}
-			this->delayInput = 0;
 		}
 	}
 	this->window->draw(player);

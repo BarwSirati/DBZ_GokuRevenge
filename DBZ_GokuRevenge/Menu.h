@@ -19,12 +19,6 @@ class MainMenu
 	RenderWindow* window;
 	Font font;
 
-	Event event;
-	float deltaTime;
-
-	float delayInput;
-	float delayInputMax;
-
 	enum STATE { MENU, PLAY, SCORE, QUIT, INPUT,QUESTION };
 	STATE action = MENU;
 
@@ -62,7 +56,7 @@ public:
 	inline void setActionToZero() { this->action = MENU; };
 	void UpdateMenuCheck(int action);
 
-	void UpdateInput(Event& event, float deltaTime);
+	void UpdateInput(vector<Event> event);
 	void DrawPlay();
 	void DrawHome();
 	void Question();

@@ -672,6 +672,7 @@ void Game::Menu()
 {
 	if (this->menuUI[1].getGlobalBounds().contains(Mouse::getPosition().x, Mouse::getPosition().y) && Mouse::isButtonPressed(Mouse::Left) || Keyboard::isKeyPressed(Keyboard::M))
 	{
+		this->sound[7].play();
 		Score(this->window).writeFile(this->playerName, this->score);
 		this->setActionToZero = true;
 	}
