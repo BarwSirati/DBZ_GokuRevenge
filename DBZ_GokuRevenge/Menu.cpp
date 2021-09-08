@@ -72,6 +72,9 @@ MainMenu::MainMenu(RenderWindow* window)
 	this->buttonHome.setPosition(1850.f, 70.f);
 	this->buttonHome.setScale(0.4f, 0.4f);
 	this->buttonHome.setOrigin(this->buttonHomeTexture.getSize().x / 2, this->buttonHomeTexture.getSize().y / 2);
+
+	this->player.setString("Enter Your Name");
+	this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
 }
 
 MainMenu::~MainMenu()
@@ -147,26 +150,18 @@ void MainMenu::UpdateInput(vector<Event> events)
 	this->window->draw(Input);
 	for (size_t i = 0; i < events.size(); i++)
 	{
-		if (this->playerName == "" && !(events[i].type == Event::TextEntered))
+		if (events[i].text.unicode != 32 && !Keyboard::isKeyPressed(Keyboard::Enter) && events[i].text.unicode != 63)
 		{
-			this->player.setString("Enter Your Name");
-			this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
-		}
-		else
-		{
-			if (events[i].text.unicode != 32 && !Keyboard::isKeyPressed(Keyboard::Enter) && events[i].text.unicode != 63)
+			if (events[i].text.unicode == 8 && playerName.length() > 0)
 			{
-				if (events[i].text.unicode == 8 && playerName.length() > 0)
-				{
-					playerName.erase(playerName.length() - 1);
-				}
-				else if (events[i].text.unicode < 128 && playerName.length() < 10 && events[i].text.unicode != 8)
-				{
-					playerName += static_cast<char>(events[i].text.unicode);
-				}
-				player.setString(playerName);
-				this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
+				playerName.erase(playerName.length() - 1);
 			}
+			else if (events[i].text.unicode < 128 && playerName.length() < 10 && events[i].text.unicode != 8)
+			{
+				playerName += static_cast<char>(events[i].text.unicode);
+			}
+			player.setString(playerName);
+			this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2);
 		}
 	}
 	this->window->draw(player);
