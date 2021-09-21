@@ -58,6 +58,7 @@ MainMenu::MainMenu(RenderWindow* window)
 	this->player.setLetterSpacing(1.5);
 	this->player.setOutlineThickness(3);
 	this->player.setOutlineColor(Color::White);
+	this->player.setString(this->playerName);
 
 	this->buttonLetGoTexture.loadFromFile("Textures/MainMenu/button/let.png");
 	this->buttonLetGo.setTexture(&this->buttonLetGoTexture);
@@ -194,7 +195,7 @@ void MainMenu::DrawHome()
 		if (Mouse::isButtonPressed(Mouse::Left))
 		{
 			UpdateMenuCheck(0);
-			this->playerName.clear();
+			ResetName();
 			this->sound[0].play();
 		}
 	}

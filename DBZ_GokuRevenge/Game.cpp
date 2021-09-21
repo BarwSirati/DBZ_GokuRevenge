@@ -4,16 +4,13 @@ Game::Game(RenderWindow* window)
 	//Sounds
 	for (size_t i = 0; i < 9; i++)
 	{
-		if (!this->buffer[i].loadFromFile("Audio/"+to_string(i+1)+".wav"))
-		{
+		if (!this->buffer[i].loadFromFile("Audio/" + to_string(i + 1) + ".wav"))
 			cout << "Error load file" << endl;
-		}
 		this->sound[i].setBuffer(this->buffer[i]);
 	}
 	this->sound[2].setVolume(100);
 	this->sound[6].setVolume(100);
 	this->sound[7].setVolume(100);
-
 
 	this->window = window;
 	this->window->setFramerateLimit(70);
@@ -33,12 +30,10 @@ Game::Game(RenderWindow* window)
 	this->shenronTexture.loadFromFile("Textures/Items/shenron.png");
 	this->enemy01Texture.loadFromFile("Textures/Enemy/saibaiman.png");
 
-
 	this->BackgroundTexture[0].loadFromFile("Textures/Backgrounds/GamePlay/sky.jpg");
 	this->BackgroundTexture[1].loadFromFile("Textures/Backgrounds/GamePlay/rock3.png");
 	this->BackgroundTexture[2].loadFromFile("Textures/Backgrounds/GamePlay/rock2.png");
 	this->BackgroundTexture[3].loadFromFile("Textures/Backgrounds/GamePlay/rock.png");
-
 
 	this->backgrounds.push_back(Background(&this->BackgroundTexture[0], -60.f));
 	this->backgrounds.push_back(Background(&this->BackgroundTexture[1], -120.f));
@@ -64,9 +59,7 @@ Game::Game(RenderWindow* window)
 
 	//Items texture
 	for (size_t i = 0; i < 7; i++)
-	{
 		this->itemTexture[i].loadFromFile("Textures/Items/" + to_string(i + 1) + ".png");
-	}
 
 	//UI Texture
 	this->playerBar.loadFromFile("Textures/UI/player_bar.png");
@@ -89,11 +82,8 @@ Game::Game(RenderWindow* window)
 	this->playerProfile.setPosition(28.f, 810.f);
 	this->playerProfile.setSize(Vector2f(this->playerImage.getSize()));
 
-
 	this->enemySpawnTimerMax = 35.f;
 	this->enemySpawnTimer = this->enemySpawnTimerMax;
-
-
 
 	//Init player
 	this->players.push_back(Player(&playerTexture, &bulletTexture, 2, 0.3f));
@@ -227,8 +217,6 @@ void Game::UpdateUIPlayer(int index)
 	this->damage.setString("Damage Min : " + to_string(this->players[index].Damage()));
 	this->level.setString("Level : " + to_string(this->players[index].getLevel()));
 
-
-
 	//Ui dragonBall In Player Bar 
 	float dragonBallPos = 800;
 	for (int i = 0; i < 7; i++)
@@ -237,13 +225,9 @@ void Game::UpdateUIPlayer(int index)
 		this->dragonBall[i].setSize(Vector2f(itemTexture[i].getSize()));
 		this->dragonBall[i].setScale(0.04f, 0.04f);
 		if (itemsKeep[i] == 0)
-		{
 			this->dragonBall[i].setFillColor(Color(99, 99, 99));
-		}
 		else
-		{
 			this->dragonBall[i].setFillColor(Color::White);
-		}
 		this->dragonBall[i].setPosition(dragonBallPos, 999.f);
 		dragonBallPos += 40;
 	}
@@ -270,9 +254,7 @@ void Game::Update(float deltaTime)
 
 		//Update timers
 		if (this->enemySpawnTimer < this->enemySpawnTimerMax)
-		{
 			this->enemySpawnTimer++;
-		}
 		if (this->multiplierTimer > 0.f)
 		{
 			this->multiplierTimer--;
@@ -280,7 +262,8 @@ void Game::Update(float deltaTime)
 			{
 				this->multiplierTimer = 0.f;
 				this->multiplierAdder = 0;
-				this->scoreMultiplier = 1;}
+				this->scoreMultiplier = 1;
+			}
 		}
 
 		this->scoreMultiplier = this->multiplierAdder / this->multiplierAdderMax + 1;
@@ -289,7 +272,7 @@ void Game::Update(float deltaTime)
 		if (this->enemySpawnTimer >= this->enemySpawnTimerMax && !this->shenRon)
 		{
 			randTexture = rand() % 20 + 1;
-			if (randTexture  == 1)
+			if (randTexture == 1)
 			{
 				randBoss = rand() % (20 * this->players[0].getLevel()) + 1;
 				if (randBoss < 20 && this->players[0].getLevel() > 15)
@@ -432,7 +415,7 @@ void Game::Update(float deltaTime)
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
 										cout << "Level UP" << this->players[i].getLevel() << this->enemySpawnTimerMax << endl;
 									}
-									
+
 								}
 								//Create TextTag
 								this->textTags.push_back(
@@ -502,7 +485,7 @@ void Game::Update(float deltaTime)
 					}
 				}
 			}
-			
+
 			for (int i = 0; i < 7; i++)
 			{
 				this->itemsKeep[i] = 0;
@@ -518,7 +501,7 @@ void Game::Update(float deltaTime)
 			{
 				if (this->players[k].getGlobalBounds().intersects(this->items[i].getGlobalBounds()))
 				{
-					
+
 					this->sound[1].play();
 					this->itemsKeep[this->items[i].getStar() - 1] = 1;
 					//Create textTag
@@ -606,10 +589,9 @@ void Game::Update(float deltaTime)
 				break;
 			}
 		}
-		
+
 	}
 }
-
 void Game::GameOverMenu()
 {
 	for (size_t i = 0; i < 2; i++)
@@ -639,9 +621,7 @@ void Game::GameOverMenu()
 		}
 		this->window->draw(this->menuOver[i]);
 	}
-
 }
-
 void Game::Pause()
 {
 	if ((this->menuUI[0].getGlobalBounds().contains(Vector2f(Mouse::getPosition())) && Mouse::isButtonPressed(Mouse::Left)) || Keyboard::isKeyPressed(Keyboard::P))
@@ -677,14 +657,11 @@ void Game::Menu()
 		this->setActionToZero = true;
 	}
 }
-
 void Game::Draw()
 {
 	this->window->clear();
-
 	for (Background& background : backgrounds)
 		background.Draw(*this->window);
-
 	Pause();
 	Menu();
 	for (size_t i = 0; i < shenrons.size(); i++)
@@ -700,19 +677,17 @@ void Game::Draw()
 	}
 	for (size_t i = 0; i < this->items.size(); i++)
 	{
-		if (!this->pauseEvent) 
+		if (!this->pauseEvent)
 		{
 			this->items[i].Update();
 		}
 		this->items[i].Draw(*this->window);
 	}
-
 	for (size_t i = 0; i < this->players.size(); i++)
 	{
 		if (this->players[i].isAlive())
 		{
 			this->players[i].Draw(*this->window);
-
 			//UI
 			this->UpdateUIPlayer(i);
 			this->window->draw(this->playerUiBar);
@@ -741,13 +716,10 @@ void Game::Draw()
 			}
 		}
 	}
-	
-
 	for (size_t i = 0; i < this->textTags.size(); i++)
 	{
 		this->textTags[i].Draw(*this->window);
 	}
-
 	//Game Over Text
 	if (this->playerAlive <= 0)
 	{
@@ -761,10 +733,8 @@ void Game::Draw()
 		GameOverMenu();
 		this->window->draw(this->scoreLasted);
 	}
-
 	this->window->display();
 }
-
 void Game::gameReset()
 {
 	for (size_t i = 0; i < players.size(); i++)

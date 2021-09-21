@@ -85,17 +85,11 @@ int main()
 				}
 			}
 			if (action == 3)
-			{
 				window.close();
-			}
 			if (action == 4)
-			{
 				menu.UpdateInput(textEntered);
-			}
 			if (action == 5)
-			{
 				menu.How();
-			}
 		}
 	}
 	return 0;

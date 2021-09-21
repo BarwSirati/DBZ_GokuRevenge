@@ -45,9 +45,7 @@ void Enemy::takeDamage(int damage)
 	this->hp -= damage;
 	this->damageTimer = this->damageTimerMax;
 	if (this->hp <= 0)
-	{
 		this->hp = 0;
-	}
 }
 
 void Enemy::Update(Vector2f playerPostion)
@@ -69,18 +67,12 @@ void Enemy::Update(Vector2f playerPostion)
 		this->normalizedDir = normalize(this->direction, vectorLength(this->direction));
 
 		if (this->normalizedDir.y > 0.3)
-		{
 			this->normalizedDir.y = 0.3;
-		}
 		else if (this->normalizedDir.y < -0.3)
-		{
 			this->normalizedDir.y = -0.3;
-		}
 
 		if (this->normalizedDir.x > -0.7)
-		{
 			this->normalizedDir.x = -0.7;
-		}
 
 		this->sprite.setRotation(atan2(this->normalizedDir.y, this->normalizedDir.x) * 180 / 3.14159265359 + 180);
 

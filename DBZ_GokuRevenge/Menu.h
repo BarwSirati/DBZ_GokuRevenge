@@ -19,7 +19,7 @@ class MainMenu
 	RenderWindow* window;
 	Font font;
 
-	enum STATE { MENU, PLAY, SCORE, QUIT, INPUT,QUESTION };
+	enum STATE { MENU, PLAY, SCORE, QUIT, INPUT, QUESTION };
 	STATE action = MENU;
 
 	Texture howTexture;
@@ -64,6 +64,11 @@ public:
 
 	void Update();
 	void Draw();
-	inline void ResetName() { this->playerName = ""; };
+	inline void ResetName() 
+	{ 
+		this->playerName.clear(); 
+		this->player.setString("Enter Your Name"); 
+		this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2); 
+	};
 };
 
