@@ -71,4 +71,3 @@ public:
 		this->player.setOrigin(this->player.getLocalBounds().width / 2, this->player.getLocalBounds().height / 2); 
 	};
 };
-

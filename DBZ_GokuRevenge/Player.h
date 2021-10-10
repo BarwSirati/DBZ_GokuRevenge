@@ -53,6 +53,10 @@ private:
 	float totalTime;
 	float switchTime;
 
+	Vector2f aimDir;
+	Vector2f aimDirNorm;
+	Vector2f MousePos;
+	Vector2f PlayerPos;
 public:
 	Player(Texture* texture, Texture* bulletTexture, int imageCount, float switchTime,
 		int UP = Keyboard::W,
@@ -92,10 +96,10 @@ public:
 	inline const int Damage() const { return this->damage; }
 	//Function
 	bool UpdateLeveling();
-	void Combat();
+	void Combat(RenderWindow& target);
 	void Movement();
 	void Update(Vector2u windowBounds, float deltaTime);
-	void Draw(RenderTarget& target);
+	void Draw(RenderWindow& target);
 
 	//Statics
 	static unsigned players;

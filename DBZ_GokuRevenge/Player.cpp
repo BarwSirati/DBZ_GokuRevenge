@@ -8,7 +8,6 @@ enum controls
 	DOWN,
 	LEFT,
 	RIGHT,
-	SHOOT
 };
 Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float switchTime,
 	int UP, int DOWN, int LEFT, int RIGHT, int SHOOT)
@@ -17,7 +16,7 @@ Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float s
 	damage(1), damageMax(2),
 	score(0)
 {
-	
+
 	if (!this->buffer.loadFromFile("Audio/shoot.wav"))
 	{
 		cout << "Error load file" << endl;
@@ -48,7 +47,6 @@ Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float s
 	this->controls[controls::DOWN] = DOWN;
 	this->controls[controls::LEFT] = LEFT;
 	this->controls[controls::RIGHT] = RIGHT;
-	this->controls[controls::SHOOT] = SHOOT;
 
 	this->maxVelocity = 25.f;
 	this->acceleration = 0.8f;
@@ -91,8 +89,8 @@ bool Player::UpdateLeveling()
 			this->hpMax *= 3;
 			this->damageMax *= 3;
 			this->damage *= 1.5;
-		} 
-		else if (this->level > 15 ) 
+		}
+		else if (this->level > 15)
 		{
 			if (this->shootTimerMax > 15)
 			{
@@ -101,8 +99,8 @@ bool Player::UpdateLeveling()
 			}
 			this->hpMax *= 1.1;
 			this->damageMax += 4;
-			this->damage+=2;
-			
+			this->damage += 2;
+
 		}
 		else
 		{
@@ -110,7 +108,7 @@ bool Player::UpdateLeveling()
 			this->damageMax += 1;
 			this->damage++;
 		}
-		
+
 		this->hp = hpMax;
 		this->exp -= this->expNext;
 		this->expNext = static_cast<int>(
@@ -198,6 +196,7 @@ void Player::Movement()
 
 	//Final move
 	this->sprite.move(this->currentVelocity.x, this->currentVelocity.y);
+
 	if (this->getPosition().y < 40.4f)
 		this->sprite.setPosition(this->getPosition().x, 40.4f);
 	if (this->getPosition().x < 12.0f)
@@ -207,19 +206,23 @@ void Player::Movement()
 	if (this->getPosition().y > 542.0f)
 		this->sprite.setPosition(this->getPosition().x, 542.0f);
 }
-void Player::Combat()
+void Player::Combat(RenderWindow& target)
 {
-	if (Keyboard::isKeyPressed(Keyboard::Key(this->controls[controls::SHOOT])) && this->shootTimer >= this->shootTimerMax)
+	if (Mouse::isButtonPressed(Mouse::Left) && this->shootTimer >= this->shootTimerMax)
 	{
-		
-		
 		this->sound.setBuffer(this->buffer);
 		this->sound.play();
+		
+		this->PlayerPos = this->sprite.getPosition();
+		this->MousePos = Vector2f(Mouse::getPosition(target));
 
+		this->aimDir = this->MousePos - this->PlayerPos;
+
+		this->aimDirNorm = this->aimDir / sqrt((this->aimDir.x * this->aimDir.x + this->aimDir.y * this->aimDir.y));
 		this->bullets.push_back(
 			Bullet(bulletTexture,
 				this->playerCenter,
-				Vector2f(1.f, 0.f), 2.f,
+				this->aimDirNorm, 2.f,
 				50.f, 2.f));
 		this->shootTimer = 0; //Reset Timer
 	}
@@ -275,14 +278,15 @@ void Player::Update(Vector2u windowBounds, float deltaTime)
 		this->sprite.getGlobalBounds().height / 2;
 
 	this->Movement();
-	this->Combat();
+	
 }
 
-void Player::Draw(RenderTarget& target)
+void Player::Draw(RenderWindow& target)
 {
+	target.draw(this->sprite);
 	for (size_t i = 0; i < this->bullets.size(); i++)
 	{
 		this->bullets[i].Draw(target);
 	}
-	target.draw(this->sprite);
+	this->Combat(target);
 }

@@ -413,7 +413,6 @@ void Game::Update(float deltaTime)
 									{
 										this->enemySpawnTimerMax -= 0.3;
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
-										cout << "Level UP" << this->players[i].getLevel() << this->enemySpawnTimerMax << endl;
 									}
 
 								}
@@ -432,7 +431,7 @@ void Game::Update(float deltaTime)
 						}
 					}
 					//Window bounds check
-					if (this->players[i].getBullets()[k].getPosition().x > this->window->getSize().x)
+					if (this->players[i].getBullets()[k].getPosition().x > this->window->getSize().x || this->players[i].getBullets()[k].getPosition().y < 0 || this->players[i].getBullets()[k].getPosition().y > this->window->getSize().y)
 					{
 						this->players[i].getBullets().erase(this->players[i].getBullets().begin() + k);
 						return;
@@ -481,7 +480,6 @@ void Game::Update(float deltaTime)
 					{
 						this->enemySpawnTimerMax -= 0.3;
 						this->enemySpawnTimer = this->enemySpawnTimerMax;
-						cout << "Level UP" << this->players[i].getLevel() << this->enemySpawnTimerMax << endl;
 					}
 				}
 			}

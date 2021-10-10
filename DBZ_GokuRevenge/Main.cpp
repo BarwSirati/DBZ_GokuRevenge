@@ -2,7 +2,7 @@
 int main()
 {
 	srand(time(NULL));
-	RenderWindow window(VideoMode(1920, 1080), "DragonBallZ GokuRevenge", Style::Fullscreen | Style::Titlebar);
+	RenderWindow window(VideoMode(1920, 1080), "DragonBallZ GokuRevenge", Style::Fullscreen | Style::Close);
 	float deltaTime = 0.0f;
 	Clock clock;
 
@@ -54,7 +54,6 @@ int main()
 			int action = menu.getAction();
 			if (action == 0)
 			{	
-				
 				musicSound.Play(0);
 				menu.Draw();
 				game.resetAction();

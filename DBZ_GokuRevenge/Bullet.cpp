@@ -40,7 +40,6 @@ void Bullet::Movement()
 			this->maxVelocity * this->direction.x,
 			this->maxVelocity * this->direction.y);
 	}
-
 	this->sprite.move(this->currentVelocity);
 }
 
