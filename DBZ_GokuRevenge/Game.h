@@ -121,11 +121,32 @@ private:
 	Texture menuOverTexture[2];
 	RectangleShape menuOver[2];
 
+	Texture timeStopIconTexture;
+	Sprite timeStopIconSprite;
+
+	Text coolTimeText;
+	float coolTime;
+
+	bool canStopTime = false;
+	bool useTimeStop = false;
+	bool usingTime = false;
+
+	Texture beamIconTexture;
+	Sprite beamIconSprite;
+	RectangleShape beam;
+	Texture beamTexture;
+	Text coolBeamText;
+	float coolBeam;
+	bool useBeam = false;
+	bool usingBeam = false;
+
 	string textForm[4] = { "","( Super Saiya )","( Super Saiya God )","( Super Saiya Blue )" };
 	int itemsKeep[7] = { 0,0,0,0,0,0,0 };
 	string playerName;
 	
 	int transform[3] = { 0,0,0};
+
+	
 
 public:
 	Game(RenderWindow* window);

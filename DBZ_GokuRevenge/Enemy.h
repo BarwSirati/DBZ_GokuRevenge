@@ -9,7 +9,6 @@ private:
 	Vector2f direction;
 	Vector2f normalizedDir;
 
-	vector<Bullet> bullets;
 
 	float maxVelocity;
 	float max;
@@ -23,9 +22,6 @@ private:
 
 	int damageTimer;
 	int damageTimerMax;
-
-	float shootTimerMax;
-	float shootTimer;
 
 	int playerFollowNr;
 

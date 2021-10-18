@@ -30,9 +30,6 @@ Enemy::Enemy(Texture* texture, Vector2u windowBounds,
 	this->damageTimerMax = 4.f;
 	this->damageTimer = 0;
 
-	this->shootTimerMax = 15.f;
-	this->shootTimer = this->shootTimerMax;
-
 	this->playerFollowNr = playerFollowNr;
 }
 
@@ -97,9 +94,4 @@ void Enemy::Update(Vector2f playerPostion)
 void Enemy::Draw(RenderTarget& target)
 {
 	target.draw(this->sprite);
-
-	for (size_t i = 0; i < this->bullets.size(); i++)
-	{
-		this->bullets[i].Draw(target);
-	}
 }

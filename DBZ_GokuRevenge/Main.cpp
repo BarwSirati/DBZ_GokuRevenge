@@ -24,7 +24,6 @@ int main()
 		textEntered.clear();
 		deltaTime = clock.restart().asSeconds();
 		Event event;
-		
 		while (window.pollEvent(event))
 		{
 			switch (event.type)

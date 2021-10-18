@@ -67,6 +67,8 @@ Game::Game(RenderWindow* window)
 	this->playerImage2.loadFromFile("Textures/Character/profile/GokuProfile2.png");
 	this->playerImage3.loadFromFile("Textures/Character/profile/GokuProfile3.png");
 	this->playerImage4.loadFromFile("Textures/Character/profile/GokuProfile4.png");
+	this->timeStopIconTexture.loadFromFile("Textures/Character/skill/timestop.png");
+	this->beamIconTexture.loadFromFile("Textures/Character/skill/beam.png");
 
 	//UI button
 	this->pause.loadFromFile("Textures/UI/menu/pause.png");
@@ -74,6 +76,7 @@ Game::Game(RenderWindow* window)
 	this->resume.loadFromFile("Textures/UI/menu/resume.png");
 
 	//UI Texture Setting Value
+
 	this->playerUiBar.setTexture(&this->playerBar);
 	this->playerUiBar.setPosition(0.f, 698.f);
 	this->playerUiBar.setSize(Vector2f(this->playerBar.getSize()));
@@ -82,8 +85,20 @@ Game::Game(RenderWindow* window)
 	this->playerProfile.setPosition(28.f, 810.f);
 	this->playerProfile.setSize(Vector2f(this->playerImage.getSize()));
 
-	this->enemySpawnTimerMax = 35.f;
+	this->timeStopIconSprite.setTexture(this->timeStopIconTexture);
+	this->timeStopIconSprite.setPosition(520.f, 880.f);
+	this->timeStopIconSprite.setScale(0.1, 0.1);
+
+	this->beamIconSprite.setTexture(this->beamIconTexture);
+	this->beamIconSprite.setPosition(520.f, 950.f);
+	this->beamIconSprite.setScale(0.1, 0.1);
+
+	this->enemySpawnTimerMax = 70.f;
 	this->enemySpawnTimer = this->enemySpawnTimerMax;
+
+	this->coolTime = 61.f;
+	this->coolBeam = 121.f;
+	this->beam.setFillColor(Color::Cyan);
 
 	//Init player
 	this->players.push_back(Player(&playerTexture, &bulletTexture, 2, 0.3f));
@@ -187,6 +202,19 @@ void Game::InitUI()
 	{
 		this->menuUI[i].setSize(Vector2f(280.f, 80.f));
 	}
+
+	//Skill UI
+	this->coolTimeText.setFont(this->font);
+	this->coolTimeText.setPosition(535.f, 888.f);
+	this->coolTimeText.setCharacterSize(30);
+	this->coolTimeText.setOutlineThickness(2);
+	this->coolTimeText.setFillColor(Color::White);
+
+	this->coolBeamText.setFont(this->font);
+	this->coolBeamText.setPosition(534.f, 958.f);
+	this->coolBeamText.setCharacterSize(30);
+	this->coolBeamText.setOutlineThickness(2);
+	this->coolBeamText.setFillColor(Color::White);
 }
 
 void Game::UpdateUIPlayer(int index)
@@ -231,6 +259,8 @@ void Game::UpdateUIPlayer(int index)
 		this->dragonBall[i].setPosition(dragonBallPos, 999.f);
 		dragonBallPos += 40;
 	}
+
+
 	this->name.setString("Player Name : " + this->playerName);
 }
 
@@ -269,9 +299,9 @@ void Game::Update(float deltaTime)
 		this->scoreMultiplier = this->multiplierAdder / this->multiplierAdderMax + 1;
 
 		//Spawn enemies
-		if (this->enemySpawnTimer >= this->enemySpawnTimerMax && !this->shenRon)
+		if (this->enemySpawnTimer >= this->enemySpawnTimerMax && !this->shenRon && !this->usingTime)
 		{
-			randTexture = rand() % 20 + 1;
+			randTexture = rand() % 30 + 1;
 			if (randTexture == 1)
 			{
 				randBoss = rand() % (20 * this->players[0].getLevel()) + 1;
@@ -322,6 +352,16 @@ void Game::Update(float deltaTime)
 			{
 				//Update Players
 				this->players[i].Update(this->window->getSize(), deltaTime);
+
+
+				if (this->players[i].getLevel() == 20)
+					this->canStopTime = true;
+
+				if (this->players[i].useTimeStop() && this->canStopTime)
+					this->useTimeStop = true;
+				if (this->players[i].useBeam())
+					this->useBeam = true;
+
 				if (this->players[i].checkTransform() == 2 && !this->transform[0])
 				{
 					this->sound[2].play();
@@ -329,6 +369,7 @@ void Game::Update(float deltaTime)
 					this->bulletTexture.loadFromFile("Textures/Character/beem/beem2.png");
 					this->playerProfile.setTexture(&this->playerImage2);
 					this->transform[0] = 1;
+					this->beam.setFillColor(Color::Yellow);
 				}
 				else if (this->players[i].checkTransform() == 3 && !this->transform[1])
 				{
@@ -337,6 +378,7 @@ void Game::Update(float deltaTime)
 					this->bulletTexture.loadFromFile("Textures/Character/beem/beem3.png");
 					this->playerProfile.setTexture(&this->playerImage3);
 					this->transform[1] = 1;
+					this->beam.setFillColor(Color::Red);
 				}
 				else if (this->players[i].checkTransform() == 4 && !this->transform[2])
 				{
@@ -345,7 +387,91 @@ void Game::Update(float deltaTime)
 					this->bulletTexture.loadFromFile("Textures/Character/beem/beem4.png");
 					this->playerProfile.setTexture(&this->playerImage4);
 					this->transform[2] = 1;
+					this->beam.setFillColor(Color::Blue);
 				}
+				if (this->useBeam && this->usingBeam)
+				{
+					this->beam.setSize(Vector2f(this->window->getSize().x - this->window->getPosition().x, 20.f));
+					this->beam.setPosition(Vector2f(this->players[i].getPosition().x + this->players[i].getGlobalBounds().width, this->players[i].getPosition().y - 20.f + this->players[i].getGlobalBounds().height / 2));
+					for (size_t k = 0; k < enemies.size(); k++)
+					{
+						if (this->beam.getGlobalBounds().intersects(this->enemies[k].getGlobalBounds()))
+						{
+							//Sound
+							this->sound[8].play();
+							//Enemy take damage
+							int damage = this->players[i].getDamage();
+							if (this->enemies[k].getHP() > 0)
+							{
+								this->enemies[k].takeDamage(damage);
+
+								//Create TextTag
+								this->textTags.push_back(
+									TextTag(
+										&this->font,
+										"-" + to_string(damage),
+										Color(252, 94, 3),
+										Vector2f(this->enemies[k].getPosition().x + 20.f,
+											this->enemies[k].getPosition().y - 20.f),
+										28, 20.f));
+							}
+							//Enemy dead
+							if (this->enemies[k].getHP() <= 0)
+							{
+								//Random Items
+								int randItems = (rand() % 100) + 1;
+
+								if (randItems < 20)
+								{
+									int randItemTexture = (rand() % 7) + 1;
+									this->items.push_back(Item(&itemTexture[randItemTexture - 1], this->enemies[k].getPosition(), randItemTexture));
+								}
+
+								//Gain Exp
+								int exp = this->enemies[k].getHPMax() + (rand() % this->enemies[k].getHPMax() + 1);
+
+								//Gain Score
+								this->multiplierTimer = this->multiplierTimerMax;
+								this->multiplierAdder++;
+
+								//Update Score
+								this->score += this->enemies[k].getHPMax() * this->scoreMultiplier;
+
+								if (this->players[i].gainExp(exp))
+								{
+									this->sound[0].play();
+									//Create TextTag
+									this->textTags.push_back(
+										TextTag(
+											&this->font,
+											"LEVEL UP",
+											Color::Green,
+											Vector2f(this->players[i].getPosition().x + 20.f,
+												this->players[i].getPosition().y + 150.f),
+											32, 30.f));
+									if (this->enemySpawnTimerMax > 20)
+									{
+										this->enemySpawnTimerMax -= 0.3;
+										this->enemySpawnTimer = this->enemySpawnTimerMax;
+									}
+
+								}
+								//Create TextTag
+								this->textTags.push_back(
+									TextTag(
+										&this->font,
+										"+" + to_string(exp) + " exp",
+										Color::Cyan,
+										Vector2f(this->players[i].getPosition().x + 20.f,
+											this->players[i].getPosition().y - 20.f),
+										24, 25.f));
+								this->enemies.erase(this->enemies.begin() + k);
+							}
+							return;
+						}
+					}
+				}
+
 				//Bullets update
 				for (size_t k = 0; k < this->players[i].getBullets().size(); k++)
 				{
@@ -523,7 +649,11 @@ void Game::Update(float deltaTime)
 		//Update Enemy
 		for (size_t i = 0; i < this->enemies.size(); i++)
 		{
-			this->enemies[i].Update(this->players[this->enemies[i].getPlayerFollowNr()].getPosition());
+			if (!this->usingTime)
+			{
+				this->enemies[i].Update(this->players[this->enemies[i].getPlayerFollowNr()].getPosition());
+			}
+
 			//Enemy Player collision
 			for (size_t k = 0; k < this->players.size(); k++)
 			{
@@ -588,6 +718,38 @@ void Game::Update(float deltaTime)
 			}
 		}
 
+		//Update TimeStop
+		if (this->useTimeStop)
+		{
+			this->coolTime -= deltaTime;
+			this->coolTimeText.setString(to_string(int(this->coolTime)));
+			if (this->coolTime <= 58.f)
+				this->usingTime = false;
+			else
+				this->usingTime = true;
+			if (this->coolTime <= 1.f)
+			{
+				this->useTimeStop = false;
+				this->coolTime = 61.f;
+				this->coolTimeText.setString(" ");
+			}
+		}
+		//Update Beam
+		if (this->useBeam)
+		{
+			this->coolBeam -= deltaTime;
+			this->coolBeamText.setString(to_string(int(this->coolBeam)));
+			if (this->coolBeam <= 119.f)
+				this->usingBeam = false;
+			else
+				this->usingBeam = true;
+			if (this->coolBeam <= 1.f)
+			{
+				this->useBeam = false;
+				this->coolBeam = 121.f;
+				this->coolBeamText.setString(" ");
+			}
+		}
 	}
 }
 void Game::GameOverMenu()
@@ -704,6 +866,12 @@ void Game::Draw()
 			this->window->draw(this->exp);
 			this->window->draw(this->damage);
 			this->window->draw(this->level);
+			this->window->draw(this->timeStopIconSprite);
+			this->window->draw(this->coolTimeText);
+			this->window->draw(this->beamIconSprite);
+			this->window->draw(this->coolBeamText);
+			if (this->usingBeam)
+				this->window->draw(this->beam);
 			for (size_t j = 0; j < 2; j++)
 			{
 				this->window->draw(this->menuUI[j]);
@@ -735,6 +903,16 @@ void Game::Draw()
 }
 void Game::gameReset()
 {
+	this->beam.setPosition(0, 0);
+	this->useTimeStop = false;
+	this->usingTime = false;
+	this->canStopTime = false;
+	this->coolBeam = 121.f;
+	this->useBeam = false;
+	this->usingBeam = false;
+	this->coolTime = 61.f;
+	this->coolTimeText.setString(" ");
+	this->coolBeamText.setString(" ");
 	for (size_t i = 0; i < players.size(); i++)
 	{
 		this->players[i].getBullets().clear();
@@ -752,6 +930,8 @@ void Game::gameReset()
 	this->multiplierAdder = 0;
 	this->multiplierTimerMax = 400.f;
 	this->multiplierTimer = this->multiplierTimerMax;
+	this->enemySpawnTimerMax = 70.f;
+	this->enemySpawnTimer = this->enemySpawnTimerMax;
 	for (size_t i = 0; i < 7; i++)
 	{
 		this->itemsKeep[i] = 0;

@@ -104,6 +104,22 @@ public:
 	//Statics
 	static unsigned players;
 
+	inline bool useTimeStop()
+	{
+		if (Keyboard::isKeyPressed(Keyboard::Q))
+		{
+			return true;
+		}
+		return false;
+	}
+	inline bool useBeam()
+	{
+		if (Keyboard::isKeyPressed(Keyboard::E))
+		{
+			return true;
+		}
+		return false;
+	}
 	//Regular function
 	float vectorLength(Vector2f v)
 	{
