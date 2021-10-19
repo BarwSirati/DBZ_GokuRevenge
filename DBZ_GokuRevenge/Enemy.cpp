@@ -88,7 +88,6 @@ void Enemy::Update(Vector2f playerPostion)
 	{
 		this->sprite.setColor(Color::White);
 	}
-
 }
 
 void Enemy::Draw(RenderTarget& target)

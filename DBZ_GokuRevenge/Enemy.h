@@ -9,7 +9,6 @@ private:
 	Vector2f direction;
 	Vector2f normalizedDir;
 
-
 	float maxVelocity;
 	float max;
 

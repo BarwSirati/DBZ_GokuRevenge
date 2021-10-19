@@ -29,6 +29,8 @@ Game::Game(RenderWindow* window)
 	this->bulletTexture.loadFromFile("Textures/Character/beem/beem1.png");
 	this->shenronTexture.loadFromFile("Textures/Items/shenron.png");
 	this->enemy01Texture.loadFromFile("Textures/Enemy/saibaiman.png");
+	this->enemy02Texture.loadFromFile("Textures/Enemy/freezer.png");
+	this->bossBullet.loadFromFile("Textures/Enemy/beem/beem.png");
 
 	this->BackgroundTexture[0].loadFromFile("Textures/Backgrounds/GamePlay/sky.jpg");
 	this->BackgroundTexture[1].loadFromFile("Textures/Backgrounds/GamePlay/rock3.png");
@@ -299,37 +301,26 @@ void Game::Update(float deltaTime)
 		this->scoreMultiplier = this->multiplierAdder / this->multiplierAdderMax + 1;
 
 		//Spawn enemies
-		if (this->enemySpawnTimer >= this->enemySpawnTimerMax && !this->shenRon && !this->usingTime)
+		if (this->enemySpawnTimer >= this->enemySpawnTimerMax && !this->shenRon && !this->usingTime && !this->bossSpawn)
 		{
 			randTexture = rand() % 30 + 1;
-			if (randTexture == 1)
+			if (randTexture < 5)
 			{
-				randBoss = rand() % (20 * this->players[0].getLevel()) + 1;
-				if (randBoss < 20 && this->players[0].getLevel() > 15)
+				randBoss = rand() % (3 * this->players[0].getLevel());
+				if (randBoss < 25 && this->players[0].getLevel() >= 15)
 				{
-					this->enemy02Texture.loadFromFile("Textures/Enemy/freezer.png");
-					this->enemies.push_back(Enemy(
-						&enemy02Texture, this->window->getSize(),
-						Vector2f(-1.f, 0.f),
-						Vector2f(0.5f, 0.5f),
-						0,
-						this->players[0].getHpMax() * 2.15,
-						this->players[0].getDamageMin() * 4.15,
-						this->players[0].getDamageMin() * 2.15,
-						rand() % this->playerAlive));
-				}
-				else
-				{
-					this->enemy02Texture.loadFromFile("Textures/Enemy/freezer.png");
-					this->enemies.push_back(Enemy(
-						&enemy02Texture, this->window->getSize(),
-						Vector2f(-1.f, 0.f),
-						Vector2f(0.2f, 0.2f),
-						rand() % 2,
-						this->players[0].getHpMax() * 1.15,
-						this->players[0].getDamageMin() * 3,
-						this->players[0].getDamageMin() * 2,
-						rand() % this->playerAlive));
+					this->bosses.push_back(
+						Boss(
+							&this->enemy02Texture,
+							&this->bossBullet,
+							Vector2f(1700, 200),
+							this->players[0].getHpMax() * 2.5,
+							this->players[0].getHpMax() * 2.5,
+							this->players[0].getDamageMin() * 5,
+							this->players[0].getDamageMin() * 5
+						)
+					);
+					this->bossSpawn = true;
 				}
 			}
 			else
@@ -466,6 +457,166 @@ void Game::Update(float deltaTime)
 											this->players[i].getPosition().y - 20.f),
 										24, 25.f));
 								this->enemies.erase(this->enemies.begin() + k);
+							}
+							return;
+						}
+						for (size_t j = 0; j < bosses.size(); j++)
+						{
+							if (this->beam.getGlobalBounds().intersects(this->bosses[j].getGlobalBounds()))
+							{
+
+								//Sound
+								this->sound[8].play();
+								//Enemy take damage
+								int damage = this->players[i].getDamage();
+								if (this->bosses[j].getHp() > 0)
+								{
+									this->bosses[j].takeDamage(damage);
+
+									//Create TextTag
+									this->textTags.push_back(
+										TextTag(
+											&this->font,
+											"-" + to_string(damage),
+											Color(252, 94, 3),
+											Vector2f(this->bosses[j].getPosition().x + 20.f,
+												this->bosses[j].getPosition().y - 20.f),
+											28, 20.f));
+								}
+								//Enemy dead
+								if (this->bosses[j].getHp() <= 0)
+								{
+									//Random Items
+									int randItems = (rand() % 100) + 1;
+
+									if (randItems < 20)
+									{
+										int randItemTexture = (rand() % 7) + 1;
+										this->items.push_back(Item(&itemTexture[randItemTexture - 1], this->bosses[j].getPosition(), randItemTexture));
+									}
+
+									//Gain Exp
+									int exp = this->bosses[j].getHpMax() + (rand() % this->bosses[j].getHpMax() + 1);
+
+									//Gain Score
+									this->multiplierTimer = this->multiplierTimerMax;
+									this->multiplierAdder++;
+
+									//Update Score
+									this->score += this->bosses[j].getHpMax() * this->scoreMultiplier;
+
+									if (this->players[i].gainExp(exp))
+									{
+										this->sound[0].play();
+										//Create TextTag
+										this->textTags.push_back(
+											TextTag(
+												&this->font,
+												"LEVEL UP",
+												Color::Green,
+												Vector2f(this->players[i].getPosition().x + 20.f,
+													this->players[i].getPosition().y + 150.f),
+												32, 30.f));
+										if (this->enemySpawnTimerMax > 20)
+										{
+											this->enemySpawnTimerMax -= 0.3;
+											this->enemySpawnTimer = this->enemySpawnTimerMax;
+										}
+									}
+									//Create TextTag
+									this->textTags.push_back(
+										TextTag(
+											&this->font,
+											"+" + to_string(exp) + " exp",
+											Color::Cyan,
+											Vector2f(this->players[i].getPosition().x + 20.f,
+												this->players[i].getPosition().y - 20.f),
+											24, 25.f));
+									this->bosses.erase(this->bosses.begin() + j);
+								}
+								return;
+							}
+						}
+					}
+				}
+				for (size_t k = 0; k < this->players[i].getBullets().size(); k++)
+				{
+					this->players[i].getBullets()[k].Update();
+					for (size_t j = 0; j < bosses.size(); j++)
+					{
+						if (this->players[i].getBullets()[k].getGlobalBounds().intersects(this->bosses[j].getGlobalBounds()))
+						{
+
+							this->players[i].getBullets().erase(this->players[i].getBullets().begin() + k);
+							//Sound
+							this->sound[8].play();
+							//Enemy take damage
+							int damage = this->players[i].getDamage();
+							if (this->bosses[j].getHp() > 0)
+							{
+								this->bosses[j].takeDamage(damage);
+
+								//Create TextTag
+								this->textTags.push_back(
+									TextTag(
+										&this->font,
+										"-" + to_string(damage),
+										Color(252, 94, 3),
+										Vector2f(this->bosses[j].getPosition().x + 20.f,
+											this->bosses[j].getPosition().y - 20.f),
+										28, 20.f));
+							}
+							//Boss dead
+							if (this->bosses[j].getHp() <= 0)
+							{
+								this->bossSpawn = false;
+								//Random Items
+								int randItems = (rand() % 100) + 1;
+
+								if (randItems < 20)
+								{
+									int randItemTexture = (rand() % 7) + 1;
+									this->items.push_back(Item(&itemTexture[randItemTexture - 1], this->bosses[j].getPosition(), randItemTexture));
+								}
+
+								//Gain Exp
+								int exp = this->bosses[j].getHpMax() + (rand() % this->bosses[j].getHpMax() + 1);
+
+								//Gain Score
+								this->multiplierTimer = this->multiplierTimerMax;
+								this->multiplierAdder++;
+
+								//Update Score
+								this->score += this->bosses[j].getHpMax() * this->scoreMultiplier;
+
+								if (this->players[i].gainExp(exp))
+								{
+									this->sound[0].play();
+									//Create TextTag
+									this->textTags.push_back(
+										TextTag(
+											&this->font,
+											"LEVEL UP",
+											Color::Green,
+											Vector2f(this->players[i].getPosition().x + 20.f,
+												this->players[i].getPosition().y + 150.f),
+											32, 30.f));
+									if (this->enemySpawnTimerMax > 20)
+									{
+										this->enemySpawnTimerMax -= 0.3;
+										this->enemySpawnTimer = this->enemySpawnTimerMax;
+									}
+								}
+								//Create TextTag
+								this->textTags.push_back(
+									TextTag(
+										&this->font,
+										"+" + to_string(exp) + " exp",
+										Color::Cyan,
+										Vector2f(this->players[i].getPosition().x + 20.f,
+											this->players[i].getPosition().y - 20.f),
+										24, 25.f));
+								this->bosses.erase(this->bosses.begin() + j);
 							}
 							return;
 						}
@@ -643,6 +794,81 @@ void Game::Update(float deltaTime)
 			if (this->items[i].getPosition().x < 0 - this->items[i].getGlobalBounds().width)
 			{
 				this->items.erase(this->items.begin() + i);
+				break;
+			}
+		}
+		//Update Bosses
+		for (size_t i = 0; i < bosses.size(); i++)
+		{
+			if (!this->usingTime)
+			{
+				this->bosses[i].Update(deltaTime);
+			}
+			//Bosses Bullet
+			for (size_t j = 0; j < bosses[i].getBullets().size(); j++)
+			{
+				this->bosses[i].getBullets()[j].Update(deltaTime);
+				for (size_t k = 0; k < this->players.size(); k++)
+				{
+					if (this->bosses[i].getBullets()[j].getGlobalBounds().intersects(this->players[k].getGlobalBounds()))
+					{
+						this->sound[5].play();
+						int damage = this->bosses[i].getDamage();
+
+						this->players[k].takeDamage(damage);
+						this->textTags.push_back(
+							TextTag(
+								&this->font,
+								to_string(damage),
+								Color::Red,
+								Vector2f(this->players[k].getPosition().x + 20.f, this->players[k].getPosition().y - 20.f),
+								30, 15.f));
+
+						//Player death
+						if (!this->players[k].isAlive()) {
+							this->sound[6].play();
+							this->playerAlive = 0;
+						}
+						return;
+					}
+				}
+			}
+			//Enemy Player collision
+			for (size_t k = 0; k < this->players.size(); k++)
+			{
+				if (this->players[k].isAlive())
+				{
+					if (this->players[k].getGlobalBounds().intersects(this->bosses[i].getGlobalBounds())
+						&& !this->players[k].isDamageCooldown())
+					{
+						this->sound[5].play();
+						int damage = this->bosses[i].getDamage();
+
+						this->players[k].takeDamage(damage);
+
+						//Create textTag
+						this->textTags.push_back(
+							TextTag(
+								&this->font,
+								to_string(damage),
+								Color::Red,
+								Vector2f(this->players[k].getPosition().x + 20.f, this->players[k].getPosition().y - 20.f),
+								30, 15.f));
+
+
+						this->bosses.erase(this->bosses.begin() + i);
+						//Player death
+						if (!this->players[k].isAlive()) {
+							this->sound[6].play();
+							this->playerAlive = 0;
+						}
+						return;
+					}
+				}
+			}
+			if (this->bosses[i].getPosition().x < 0 - this->bosses[i].getGlobalBounds().width)
+			{
+				this->bosses.erase(this->bosses.begin() + i);
 				break;
 			}
 		}
@@ -843,6 +1069,10 @@ void Game::Draw()
 		}
 		this->items[i].Draw(*this->window);
 	}
+	for (size_t i = 0; i < this->bosses.size(); i++)
+	{
+		this->bosses[i].Draw(*this->window);
+	}
 	for (size_t i = 0; i < this->players.size(); i++)
 	{
 		if (this->players[i].isAlive())
@@ -922,6 +1152,7 @@ void Game::gameReset()
 	this->playerAlive = 1;
 	this->players.clear();
 	this->enemies.clear();
+	this->bosses.clear();
 	this->backgrounds.clear();
 	this->items.clear();
 	this->scoreMultiplier = 1;
@@ -932,6 +1163,7 @@ void Game::gameReset()
 	this->multiplierTimer = this->multiplierTimerMax;
 	this->enemySpawnTimerMax = 70.f;
 	this->enemySpawnTimer = this->enemySpawnTimerMax;
+	this->bossSpawn = false;
 	for (size_t i = 0; i < 7; i++)
 	{
 		this->itemsKeep[i] = 0;

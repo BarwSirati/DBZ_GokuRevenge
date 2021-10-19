@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Enemy.h"
+#include "Boss.h"
 #include "Item.h"
 #include "Menu.h"
 #include "Background.h"
@@ -89,6 +90,10 @@ private:
 	float enemySpawnTimer;
 	float enemySpawnTimerMax;
 
+	//Boss
+	vector<Boss> bosses;
+	Texture bossBullet;
+
 	//Background
 	vector<Background> backgrounds;
 
@@ -145,7 +150,7 @@ private:
 	string playerName;
 	
 	int transform[3] = { 0,0,0};
-
+	bool bossSpawn = false;
 	
 
 public:
