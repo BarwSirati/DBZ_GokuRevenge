@@ -95,7 +95,7 @@ Game::Game(RenderWindow* window)
 	this->beamIconSprite.setPosition(520.f, 950.f);
 	this->beamIconSprite.setScale(0.1, 0.1);
 
-	this->enemySpawnTimerMax = 70.f;
+	this->enemySpawnTimerMax = 55.f;
 	this->enemySpawnTimer = this->enemySpawnTimerMax;
 
 	this->coolTime = 61.f;
@@ -445,6 +445,15 @@ void Game::Update(float deltaTime)
 										this->enemySpawnTimerMax -= 0.3;
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
 									}
+									this->useTimeStop = false;
+									this->usingTime = false;
+									this->canStopTime = false;
+									this->coolBeam = 121.f;
+									this->useBeam = false;
+									this->usingBeam = false;
+									this->coolTime = 61.f;
+									this->coolTimeText.setString(" ");
+									this->coolBeamText.setString(" ");
 
 								}
 								//Create TextTag
@@ -522,6 +531,15 @@ void Game::Update(float deltaTime)
 											this->enemySpawnTimerMax -= 0.3;
 											this->enemySpawnTimer = this->enemySpawnTimerMax;
 										}
+										this->useTimeStop = false;
+										this->usingTime = false;
+										this->canStopTime = false;
+										this->coolBeam = 121.f;
+										this->useBeam = false;
+										this->usingBeam = false;
+										this->coolTime = 61.f;
+										this->coolTimeText.setString(" ");
+										this->coolBeamText.setString(" ");
 									}
 									//Create TextTag
 									this->textTags.push_back(
@@ -606,6 +624,15 @@ void Game::Update(float deltaTime)
 										this->enemySpawnTimerMax -= 0.3;
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
 									}
+									this->useTimeStop = false;
+									this->usingTime = false;
+									this->canStopTime = false;
+									this->coolBeam = 121.f;
+									this->useBeam = false;
+									this->usingBeam = false;
+									this->coolTime = 61.f;
+									this->coolTimeText.setString(" ");
+									this->coolBeamText.setString(" ");
 								}
 								//Create TextTag
 								this->textTags.push_back(
@@ -691,6 +718,15 @@ void Game::Update(float deltaTime)
 										this->enemySpawnTimerMax -= 0.3;
 										this->enemySpawnTimer = this->enemySpawnTimerMax;
 									}
+									this->useTimeStop = false;
+									this->usingTime = false;
+									this->canStopTime = false;
+									this->coolBeam = 121.f;
+									this->useBeam = false;
+									this->usingBeam = false;
+									this->coolTime = 61.f;
+									this->coolTimeText.setString(" ");
+									this->coolBeamText.setString(" ");
 
 								}
 								//Create TextTag
@@ -758,6 +794,15 @@ void Game::Update(float deltaTime)
 						this->enemySpawnTimerMax -= 0.3;
 						this->enemySpawnTimer = this->enemySpawnTimerMax;
 					}
+					this->useTimeStop = false;
+					this->usingTime = false;
+					this->canStopTime = false;
+					this->coolBeam = 121.f;
+					this->useBeam = false;
+					this->usingBeam = false;
+					this->coolTime = 61.f;
+					this->coolTimeText.setString(" ");
+					this->coolBeamText.setString(" ");
 				}
 			}
 
@@ -1187,4 +1232,8 @@ void Game::gameReset()
 	this->backgrounds.push_back(Background(&this->BackgroundTexture[1], -120.f));
 	this->backgrounds.push_back(Background(&this->BackgroundTexture[2], -180.f));
 	this->backgrounds.push_back(Background(&this->BackgroundTexture[3], -380.f));
+}
+
+void Game::TextLevelUp(int playerIndex, int)
+{
 }

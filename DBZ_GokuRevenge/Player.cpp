@@ -38,7 +38,7 @@ Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float s
 	this->sprite.setTexture(*this->texture);
 	this->sprite.setScale(0.7f, 0.7f);
 
-	this->shootTimerMax = 25.f;
+	this->shootTimerMax = 30.f;
 	this->shootTimer = this->shootTimerMax;
 	this->damageTimerMax = 10.f;
 	this->damageTimer = this->damageTimerMax;
@@ -223,7 +223,7 @@ void Player::Combat(RenderWindow& target)
 			Bullet(bulletTexture,
 				this->playerCenter,
 				this->aimDirNorm, 2.f,
-				50.f, 2.f));
+				50.f, 1.5f));
 		this->shootTimer = 0; //Reset Timer
 	}
 	//DAMAGE
