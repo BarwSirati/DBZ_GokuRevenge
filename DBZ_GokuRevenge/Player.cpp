@@ -11,9 +11,9 @@ enum controls
 };
 Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float switchTime,
 	int UP, int DOWN, int LEFT, int RIGHT, int SHOOT)
-	: level(1), exp(0),
-	hp(10), hpMax(10),
-	damage(1), damageMax(2),
+	: level(15), exp(0),
+	hp(300), hpMax(300),
+	damage(25), damageMax(50),
 	score(0)
 {
 
@@ -24,7 +24,6 @@ Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float s
 	//Stats
 	this->expNext = 20 + static_cast<int>(
 		(50 / 3) * ((pow(level, 3) - 6 * pow(level, 2)) + 17 * level - 12));
-
 	this->imageCount = imageCount;
 	this->switchTime = switchTime;
 	totalTime = 0.0f;
@@ -83,7 +82,7 @@ bool Player::UpdateLeveling()
 			this->damageMax += 10;
 			this->damage += 6;
 		}
-		else if (this->level == 20)
+		else if (this->level == 15)
 		{
 			transform = 4;
 			this->hpMax *= 3;
@@ -212,7 +211,7 @@ void Player::Combat(RenderWindow& target)
 	{
 		this->sound.setBuffer(this->buffer);
 		this->sound.play();
-		
+
 		this->PlayerPos = this->sprite.getPosition();
 		this->MousePos = Vector2f(Mouse::getPosition(target));
 
@@ -278,7 +277,7 @@ void Player::Update(Vector2u windowBounds, float deltaTime)
 		this->sprite.getGlobalBounds().height / 2;
 
 	this->Movement();
-	
+
 }
 
 void Player::Draw(RenderWindow& target)

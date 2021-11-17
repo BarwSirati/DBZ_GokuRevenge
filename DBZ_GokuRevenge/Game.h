@@ -162,6 +162,7 @@ public:
 		return *this->window;
 	}
 	inline bool getPause() { return this->resumeButton; }
+
 	inline bool getCheckAction() { return this->setActionToZero; }
 	inline void resetAction() { this->setActionToZero = false; }
 

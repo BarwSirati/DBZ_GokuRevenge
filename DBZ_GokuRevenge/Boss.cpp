@@ -16,14 +16,21 @@ Boss::Boss(Texture* texture,Texture *bulletTexture, Vector2f position, int hp, i
 	this->shootTimerMax = 0.15f;
 	this->shootTimer = shootTimerMax;
 	this->angle = 0;
-	this->sweepSpeed = 80;
+	this->sweepSpeed = 60;
 	this->bulletDir = normalize(Vector2f(-1, 1));
 }
 
 void Boss::Update(float deltaTime)
 {
 	this->sprite.move(-80.f * deltaTime, 0);
-	this->angle += deltaTime * this->sweepSpeed;
+	if (this->angle >= 90) 
+	{
+		this->angle = 0;
+	}
+	else 
+	{
+		this->angle += deltaTime * this->sweepSpeed;
+	}
 	if (this->shootTimer >= this->shootTimerMax)
 	{
 		this->bullets.push_back(BossBullet(this->bulletTexture,this->sprite.getPosition(), Vector2f(0.1f, 0.1f), rotateVector(this->bulletDir, this->angle), 500.f));

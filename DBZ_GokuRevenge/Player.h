@@ -33,17 +33,17 @@ private:
 
 	bool soundHeld = false;
 
-	int level;
-	int exp;
-	int expNext;
+	size_t level;
+	size_t exp;
+	size_t expNext;
 
-	int hp;
-	int hpMax;
+	long long int hp;
+	long long int hpMax;
 
-	int damage;
-	int damageMax;
+	size_t damage;
+	size_t damageMax;
 
-	int score;
+	size_t score;
 
 	int transform = 1;
 
