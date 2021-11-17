@@ -11,9 +11,9 @@ enum controls
 };
 Player::Player(Texture* texture, Texture* bulletTexture, int imageCount, float switchTime,
 	int UP, int DOWN, int LEFT, int RIGHT, int SHOOT)
-	: level(15), exp(0),
-	hp(300), hpMax(300),
-	damage(25), damageMax(50),
+	: level(1), exp(0),
+	hp(10), hpMax(10),
+	damage(1), damageMax(2),
 	score(0)
 {
 

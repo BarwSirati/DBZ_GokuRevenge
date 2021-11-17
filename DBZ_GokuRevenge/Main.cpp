@@ -2,7 +2,7 @@
 int main()
 {
 	srand(time(NULL));
-	RenderWindow window(VideoMode(1920, 1080), "DragonBallZ GokuRevenge", Style::Fullscreen | Style::Close);
+	RenderWindow window(VideoMode(1920, 1080), "DragonBallZ GokuRevenge", Style::Default | Style::Close);
 	float deltaTime = 0.0f;
 	Clock clock;
 
